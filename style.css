@@ -6,78 +6,78 @@ body {
     width: 100vw;
     font-family: 'Arial', sans-serif;
     color: #fff;
-    perspective: 800px; /* Habilita efectos 3D */
+    /* La perspectiva es clave para la profundidad */
+    perspective: 1200px; 
 }
 
 #galaxy-container {
     position: relative;
     width: 100%;
     height: 100%;
-    transform-style: preserve-3d;
-    animation: rotateGalaxy 120s linear infinite; /* Rotación muy lenta de la galaxia */
+    /* Define el contenedor como una escena 3D */
+    transform-style: preserve-3d; 
+    /* Colocamos el contenedor en el centro de la vista 3D, listo para rotar */
+    transform: rotateX(0deg) rotateY(0deg) translateZ(0px); 
+    transition: transform 0.1s linear; /* Suaviza el arrastre */
+    cursor: grab; /* Indica que se puede arrastrar */
 }
 
-@keyframes rotateGalaxy {
-    0% { transform: rotateX(0deg) rotateY(0deg); }
-    100% { transform: rotateX(360deg) rotateY(360deg); }
+/* ------------------ AGUJERO NEGRO ------------------ */
+#black-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, 
+        rgba(0, 0, 0, 1) 0%, 
+        rgba(10, 0, 20, 1) 40%, 
+        rgba(40, 0, 80, 0.8) 80%, 
+        rgba(0, 0, 0, 0) 100%
+    );
+    /* Centrarlo exactamente y darle profundidad (z-index) */
+    transform: translate(-50%, -50%) translateZ(-100px); 
+    z-index: 500;
+    box-shadow: 0 0 50px 10px #000 inset, 0 0 80px 10px #8A2BE2; /* Efecto de horizonte de sucesos */
 }
+/* ---------------------------------------------------- */
 
 .welcome-message, .subtitle {
     position: absolute;
     width: 100%;
     text-align: center;
-    z-index: 200; /* Asegura que el texto esté por encima de las fotos */
+    z-index: 1000;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    /* Posicionamiento para que no estorbe el arrastre */
+    pointer-events: none; 
 }
 
-.welcome-message {
-    top: 30%;
-    font-size: 3em;
-    color: #FFD700; /* Dorado para el mensaje principal */
-}
-
-.subtitle {
-    top: 40%;
-    font-size: 1.5em;
-    color: #ADD8E6; /* Azul claro */
-}
+.welcome-message { top: 10%; font-size: 3em; color: #FFD700; }
+.subtitle { top: 20%; font-size: 1.5em; color: #ADD8E6; }
 
 /* Estilos para las Fotos/Estrellas */
 .star-photo {
     position: absolute;
-    border-radius: 50%; /* Hace que el contenedor de la foto sea circular */
+    border-radius: 50%;
     overflow: hidden;
-    box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.8); /* Brillo de estrella fuerte */
+    box-shadow: 0 0 8px 3px rgba(255, 255, 255, 0.5);
     transition: transform 0.5s, box-shadow 0.5s;
     cursor: pointer;
-    background-color: #f0f8ff; /* Color de fondo por si la imagen tarda en cargar */
+    background-color: #f0f8ff;
+    /* Las fotos NO son interactivas al arrastrar la galaxia */
+    pointer-events: auto; 
 }
 
 .star-photo:hover {
-    transform: scale(2.5) !important; /* Zoom al pasar el ratón */
-    z-index: 1000;
-    box-shadow: 0 0 30px 10px #FF4500; /* Brillo rojizo al hacer hover */
+    /* Zoom al pasar el ratón */
+    transform: scale(3.5) translateZ(100px) !important; 
+    z-index: 2000; /* Asegura que la foto ampliada esté encima de todo */
+    box-shadow: 0 0 30px 10px #FF4500;
 }
 
 .star-photo img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Asegura que la imagen cubra el círculo sin distorsión */
-}
-
-/* Estilos para los Corazones (Opcional, si quieres añadir corazones extra) */
-.heart {
-    position: absolute;
-    font-size: 2em; /* Tamaño base */
-    color: #FF69B4; /* Rosa brillante */
-    text-shadow: 0 0 10px #FF1493;
-    animation: pulse 1s infinite alternate; /* Animación de latido */
-    z-index: 50;
-    transition: transform 0.3s;
-    cursor: default;
-}
-
-@keyframes pulse {
-    from { transform: scale(1); opacity: 0.8; }
-    to { transform: scale(1.2); opacity: 1; }
+    object-fit: cover;
 }
