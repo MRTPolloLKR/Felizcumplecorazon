@@ -1,0 +1,83 @@
+body {
+    background-color: #000;
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    font-family: 'Arial', sans-serif;
+    color: #fff;
+    perspective: 800px; /* Habilita efectos 3D */
+}
+
+#galaxy-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    animation: rotateGalaxy 120s linear infinite; /* Rotación muy lenta de la galaxia */
+}
+
+@keyframes rotateGalaxy {
+    0% { transform: rotateX(0deg) rotateY(0deg); }
+    100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+.welcome-message, .subtitle {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    z-index: 200; /* Asegura que el texto esté por encima de las fotos */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.welcome-message {
+    top: 30%;
+    font-size: 3em;
+    color: #FFD700; /* Dorado para el mensaje principal */
+}
+
+.subtitle {
+    top: 40%;
+    font-size: 1.5em;
+    color: #ADD8E6; /* Azul claro */
+}
+
+/* Estilos para las Fotos/Estrellas */
+.star-photo {
+    position: absolute;
+    border-radius: 50%; /* Hace que el contenedor de la foto sea circular */
+    overflow: hidden;
+    box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.8); /* Brillo de estrella fuerte */
+    transition: transform 0.5s, box-shadow 0.5s;
+    cursor: pointer;
+    background-color: #f0f8ff; /* Color de fondo por si la imagen tarda en cargar */
+}
+
+.star-photo:hover {
+    transform: scale(2.5) !important; /* Zoom al pasar el ratón */
+    z-index: 1000;
+    box-shadow: 0 0 30px 10px #FF4500; /* Brillo rojizo al hacer hover */
+}
+
+.star-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra el círculo sin distorsión */
+}
+
+/* Estilos para los Corazones (Opcional, si quieres añadir corazones extra) */
+.heart {
+    position: absolute;
+    font-size: 2em; /* Tamaño base */
+    color: #FF69B4; /* Rosa brillante */
+    text-shadow: 0 0 10px #FF1493;
+    animation: pulse 1s infinite alternate; /* Animación de latido */
+    z-index: 50;
+    transition: transform 0.3s;
+    cursor: default;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); opacity: 0.8; }
+    to { transform: scale(1.2); opacity: 1; }
+}
