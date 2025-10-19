@@ -3,41 +3,33 @@ const photosData = [
     { url: './images/foto1.jpg', text: 'Aquí estábamos en la playa. Ese día me di cuenta de lo mucho que amo tu sonrisa.' }, 
     { url: './images/foto2.jpg', text: 'Recuerdo esta cena, donde hablamos de nuestros sueños. ¡Te amo, soñadora!' }, 
     { url: './images/foto3.jpg', text: 'Esta foto es mi favorita, refleja lo espontánea y hermosa que eres.' }, 
-    { url: './images/foto4.jpg', text: 'Aquí estábamos en la playa. Ese día me di cuenta de lo mucho que amo tu sonrisa.' }, 
-    { url: './images/foto5.jpg', text: 'Recuerdo esta cena, donde hablamos de nuestros sueños. ¡Te amo, soñadora!' }, 
-    { url: './images/foto6.jpg', text: 'Esta foto es mi favorita, refleja lo espontánea y hermosa que eres.' }, 
-    { url: './images/foto7.jpg', text: 'Aquí estábamos en la playa. Ese día me di cuenta de lo mucho que amo tu sonrisa.' }, 
-    { url: './images/foto8.jpg', text: 'Recuerdo esta cena, donde hablamos de nuestros sueños. ¡Te amo, soñadora!' }, 
-   
-    // Añade el resto de tus fotos con sus mensajes. ¡ESTO ES MUY IMPORTANTE!
+    // Añade el resto de tus fotos con sus mensajes aquí
 ];
 
 const container = document.getElementById('galaxy-container');
 const numPhotos = photosData.length;
-const numNebulaParticles = 200; // Número de partículas de nebulosa
-const RADIUS = 600; 
+const numNebulaParticles = 200; 
+const RADIUS = 400; // Radio de la órbita en el plano XZ
 
-// === MODAL ELEMENTS ===
-const modal = document.getElementById('photo-modal');
-const modalImage = document.getElementById('modal-image');
-const modalText = document.getElementById('modal-text');
-const closeButton = document.querySelector('.close-button');
-
-// Colores del arcoíris para la nebulosa
+// Colores del arcoíris (Mantener)
 const rainbowColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
 
 function random(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-// === FUNCIÓN PARA ABRIR EL MODAL ===
+// === LÓGICA DEL MODAL (Mantener) ===
+const modal = document.getElementById('photo-modal');
+const modalImage = document.getElementById('modal-image');
+const modalText = document.getElementById('modal-text');
+const closeButton = document.querySelector('.close-button');
+
 function openModal(photoUrl, customText) {
     modalImage.src = photoUrl;
     modalText.innerHTML = `<h2>Mi Recuerdo Especial</h2>${customText}`;
     modal.style.display = 'block';
 }
 
-// --- Cerrar el modal ---
 closeButton.onclick = function() { modal.style.display = 'none'; };
 window.onclick = function(event) {
     if (event.target == modal) {
@@ -45,7 +37,7 @@ window.onclick = function(event) {
     }
 };
 
-// === LÓGICA DE POSICIONAMIENTO DE FOTOS Y NEBULA ===
+// === LÓGICA DE POSICIONAMIENTO DE FOTOS EN ÓRBITA PLANA ===
 photosData.forEach((data, index) => {
     const photoDiv = document.createElement('div');
     const img = document.createElement('img');
@@ -59,21 +51,24 @@ photosData.forEach((data, index) => {
         openModal(data.url, data.text);
     });
 
-    // Cálculo de posición esférica
-    const phi = Math.acos(-1 + (2 * index) / numPhotos); 
-    const theta = Math.sqrt(numPhotos * Math.PI) * phi; 
+    // Cálculo de posición en el plano XZ (Órbita circular 2D)
+    const angle = (index / numPhotos) * 2 * Math.PI; 
+    const radius = RADIUS + random(-50, 50); // Añadir variación al radio
 
-    const x = RADIUS * Math.cos(theta) * Math.sin(phi);
-    const y = RADIUS * Math.sin(theta) * Math.sin(phi);
-    const z = RADIUS * Math.cos(phi);
+    const x = radius * Math.cos(angle);
+    // Y (vertical) es casi cero para mantener la órbita plana, solo un pequeño ruido
+    const y = random(-20, 20); 
+    const z = radius * Math.sin(angle); 
 
-    const size = random(50, 90); 
+    const size = random(60, 100); 
     
     photoDiv.style.width = `${size}px`;
     photoDiv.style.height = `${size}px`;
     
+    // Aplicar transformaciones 3D
     photoDiv.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
 
+    // Centrar los elementos en la pantalla
     photoDiv.style.left = `calc(50% - ${size / 2}px)`;
     photoDiv.style.top = `calc(50% - ${size / 2}px)`;
     
@@ -86,15 +81,14 @@ for (let i = 0; i < numNebulaParticles; i++) {
     const particle = document.createElement('span');
     particle.classList.add('nebula-particle');
     
-    // Asignar color aleatorio del arcoíris
     const color = rainbowColors[Math.floor(random(0, rainbowColors.length))];
     particle.style.backgroundColor = color;
     particle.style.boxShadow = `0 0 5px ${color}`;
 
-    // Posicionamiento 3D completamente aleatorio
-    const x = random(-1000, 1000);
-    const y = random(-1000, 1000);
-    const z = random(-1000, 1000); 
+    // Posicionamiento 3D en un volumen alrededor del centro
+    const x = random(-1500, 1500);
+    const y = random(-1500, 1500);
+    const z = random(-1500, 1500); 
     
     particle.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
     particle.style.animationDelay = `${random(0, 4)}s`; 
@@ -102,11 +96,12 @@ for (let i = 0; i < numNebulaParticles; i++) {
     container.appendChild(particle);
 }
 
-// === LÓGICA DE ARRASTRE (DRAG) (Mantener) ===
+// === LÓGICA DE ARRASTRE (DRAG) ===
 let isDragging = false;
 let startX = 0;
 let startY = 0;
-let rotX = 0; 
+// Rotación inicial del CSS (70deg en X)
+let rotX = 70; 
 let rotY = 0; 
 
 function applyRotation() {
@@ -115,9 +110,7 @@ function applyRotation() {
 
 // --- Eventos de ratón ---
 container.addEventListener('mousedown', (e) => {
-    // No iniciar arrastre si el modal está abierto
     if (modal.style.display === 'block') return; 
-
     isDragging = true;
     startX = e.clientX;
     startY = e.clientY;
@@ -130,10 +123,13 @@ document.addEventListener('mousemove', (e) => {
     const deltaX = e.clientX - startX;
     const deltaY = e.clientY - startY;
 
+    // Arrastre horizontal (X) sigue siendo rotación Y
     rotY += deltaX / 5; 
+    // Arrastre vertical (Y) ahora cambia la inclinación (rotación X)
     rotX -= deltaY / 5; 
     
-    rotX = Math.max(-90, Math.min(90, rotX));
+    // Limita la rotación X para que no se voltee demasiado
+    rotX = Math.max(30, Math.min(150, rotX));
     
     applyRotation();
 
@@ -146,7 +142,7 @@ document.addEventListener('mouseup', () => {
     container.style.cursor = 'grab';
 });
 
-// --- Eventos táctiles (Touch) ---
+// --- Eventos táctiles (Touch) (Similares a los de ratón) ---
 container.addEventListener('touchstart', (e) => {
     e.preventDefault();
     if (modal.style.display === 'block') return; 
@@ -165,7 +161,7 @@ document.addEventListener('touchmove', (e) => {
     rotY += deltaX / 5;
     rotX -= deltaY / 5;
 
-    rotX = Math.max(-90, Math.min(90, rotX));
+    rotX = Math.max(30, Math.min(150, rotX));
     
     applyRotation();
 
