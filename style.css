@@ -6,40 +6,34 @@ body {
     width: 100vw;
     font-family: 'Arial', sans-serif;
     color: #fff;
-    /* La perspectiva es clave para la profundidad */
-    perspective: 1200px; 
+    perspective: 1500px; /* Aumentamos la perspectiva para más profundidad */
 }
 
 #galaxy-container {
     position: relative;
     width: 100%;
     height: 100%;
-    /* Define el contenedor como una escena 3D */
     transform-style: preserve-3d; 
-    /* Colocamos el contenedor en el centro de la vista 3D, listo para rotar */
     transform: rotateX(0deg) rotateY(0deg) translateZ(0px); 
-    transition: transform 0.1s linear; /* Suaviza el arrastre */
-    cursor: grab; /* Indica que se puede arrastrar */
+    transition: transform 0.1s linear; 
+    cursor: grab; 
 }
 
-/* ------------------ AGUJERO NEGRO ------------------ */
+/* ------------------ AGUJERO NEGRO (con imagen) ------------------ */
 #black-hole {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, 
-        rgba(0, 0, 0, 1) 0%, 
-        rgba(10, 0, 20, 1) 40%, 
-        rgba(40, 0, 80, 0.8) 80%, 
-        rgba(0, 0, 0, 0) 100%
-    );
-    /* Centrarlo exactamente y darle profundidad (z-index) */
-    transform: translate(-50%, -50%) translateZ(-100px); 
+    width: 600px; /* Ajusta el tamaño de la imagen del agujero negro */
+    height: 300px; /* Ajusta la altura si es una imagen rectangular */
+    background-image: url('./images/black_hole.png'); /* <--- RUTA DE TU IMAGEN */
+    background-size: contain; /* Ajusta la imagen dentro del div */
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: translate(-50%, -50%) translateZ(-200px); /* Centrar y darle profundidad */
     z-index: 500;
-    box-shadow: 0 0 50px 10px #000 inset, 0 0 80px 10px #8A2BE2; /* Efecto de horizonte de sucesos */
+    /* Puedes añadir un sutil brillo si la imagen no tiene uno */
+    /* box-shadow: 0 0 80px 30px rgba(138, 43, 226, 0.5); */ 
 }
 /* ---------------------------------------------------- */
 
@@ -49,7 +43,6 @@ body {
     text-align: center;
     z-index: 1000;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-    /* Posicionamiento para que no estorbe el arrastre */
     pointer-events: none; 
 }
 
@@ -61,18 +54,16 @@ body {
     position: absolute;
     border-radius: 50%;
     overflow: hidden;
-    box-shadow: 0 0 8px 3px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.5); /* Brillo más sutil */
     transition: transform 0.5s, box-shadow 0.5s;
     cursor: pointer;
     background-color: #f0f8ff;
-    /* Las fotos NO son interactivas al arrastrar la galaxia */
     pointer-events: auto; 
 }
 
 .star-photo:hover {
-    /* Zoom al pasar el ratón */
-    transform: scale(3.5) translateZ(100px) !important; 
-    z-index: 2000; /* Asegura que la foto ampliada esté encima de todo */
+    transform: scale(3) translateZ(200px) !important; /* Más zoom y más adelante */
+    z-index: 2000; 
     box-shadow: 0 0 30px 10px #FF4500;
 }
 
@@ -81,3 +72,21 @@ body {
     height: 100%;
     object-fit: cover;
 }
+
+/* ------------------ CORAZONES-ESTRELLA NUEVO ESTILO ------------------ */
+.heart-star {
+    position: absolute;
+    font-size: 1.2em; /* Tamaño base más pequeño */
+    color: #FF69B4; /* Rosa brillante */
+    text-shadow: 0 0 8px #FF1493;
+    animation: twinkle 2s infinite alternate; /* Efecto de parpadeo */
+    z-index: 50;
+    pointer-events: none; /* No son interactivos */
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0.5; transform: scale(1); }
+}
+/* ---------------------------------------------------- */
