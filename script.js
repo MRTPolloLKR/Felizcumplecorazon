@@ -26,11 +26,7 @@ function pickRandomCaption(){
   return loveTexts.splice(i, 1)[0]; // sin repetirse
 }
 
-// Asegura canvas de nebulosa
-const nebulaCanvas = document.getElementById('nebula');
-const nebCtx = nebulaCanvas.getContext('2d');
-
-// 1) Fotos en órbita + caption
+/* ===== 1. Fotos en órbita + caption ===== */
 photosData.forEach((data, index) => {
   const photoDiv = document.createElement('div');
   const img = document.createElement('img');
@@ -44,7 +40,7 @@ photosData.forEach((data, index) => {
   const y = random(-30, 30);
   const z = radius * Math.sin(angle);
 
-  const size = random(60, 100);
+  const size = random(60, 110);
   photoDiv.style.width  = `${size}px`;
   photoDiv.style.height = `${size}px`;
   photoDiv.style.left   = `calc(50% - ${size/2}px)`;
@@ -61,7 +57,7 @@ photosData.forEach((data, index) => {
   container.appendChild(photoDiv);
 });
 
-// 2) Estrellas blancas
+/* ===== 2. Estrellas blancas (más grandes) ===== */
 const numWhiteParticles = 300;
 for (let i = 0; i < numWhiteParticles; i++) {
   const p = document.createElement('span');
@@ -71,74 +67,11 @@ for (let i = 0; i < numWhiteParticles; i++) {
   const z = random(-2000, 2000);
   p.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
   p.style.animationDelay = `${random(0, 3)}s`;
-  p.style.animationDuration = `${random(2.5, 3.5)}s`;
+  p.style.animationDuration = `${random(2.2, 3.2)}s`;
   container.appendChild(p);
 }
 
-// 3) Nebulosas RGB tenues (canvas)
-(function(){
-  let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-  let W, H;
-
-  function resize(){
-    const rect = container.getBoundingClientRect();
-    W = Math.floor(rect.width  * dpr);
-    H = Math.floor(rect.height * dpr);
-    nebulaCanvas.width = W; nebulaCanvas.height = H;
-    nebulaCanvas.style.width = rect.width + 'px';
-    nebulaCanvas.style.height = rect.height + 'px';
-  }
-
-  const BLOBS = 24;
-  const blobs = [];
-  function R(a,b){ return a + Math.random()*(b-a); }
-  function init(){
-    blobs.length = 0;
-    for (let i=0;i<BLOBS;i++){
-      blobs.push({
-        x: Math.random(), y: Math.random(),
-        r: R(140, 420),
-        vx: R(-0.03, 0.03), vy: R(-0.03, 0.03),
-        hue: Math.floor(R(0, 360)),
-        alpha: R(0.05, 0.12)
-      });
-    }
-  }
-
-  let t = 0;
-  function loop(){
-    t += 0.003;
-    nebCtx.fillStyle = 'rgb(8,10,14)';
-    nebCtx.fillRect(0,0,W,H);
-
-    nebCtx.globalCompositeOperation = 'lighter';
-    for (const b of blobs){
-      b.x = (b.x + b.vx * 0.0015 * W) % 1;
-      b.y = (b.y + b.vy * 0.0015 * H) % 1;
-      if (b.x < 0) b.x += 1;
-      if (b.y < 0) b.y += 1;
-
-      const cx = b.x * W, cy = b.y * H;
-      const hue = (b.hue + t*60) % 360;
-
-      const g = nebCtx.createRadialGradient(cx, cy, 0, cx, cy, b.r*dpr);
-      g.addColorStop(0.00, `hsla(${hue}, 80%, 65%, ${b.alpha})`);
-      g.addColorStop(0.55, `hsla(${(hue+40)%360}, 75%, 55%, ${b.alpha*0.55})`);
-      g.addColorStop(1.00, `hsla(${(hue+80)%360}, 70%, 45%, 0)`);
-      nebCtx.fillStyle = g;
-      nebCtx.beginPath();
-      nebCtx.arc(cx, cy, b.r*dpr, 0, Math.PI*2);
-      nebCtx.fill();
-    }
-    nebCtx.globalCompositeOperation = 'source-over';
-    requestAnimationFrame(loop);
-  }
-
-  resize(); init(); loop();
-  window.addEventListener('resize', resize, { passive:true });
-})();
-
-// 4) Drag 360° libre
+/* ===== 3. Drag 360° libre ===== */
 let isDragging=false, startX=0, startY=0, rotX=70, rotY=0;
 function applyRotation(){ container.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`; }
 
