@@ -1,323 +1,97 @@
-/* ===== Layout general ===== */
-:root{
-  --halo-rosa: 255,120,190;
-}
+/* ===== Layout ===== */
+:root { --halo-rosa: 255,120,190; }
 html, body { height: 100%; }
-body {
-  background-color: #000;
-  margin: 0;
-  overflow: auto;             /* movimiento libre de scroll */
-  height: 100vh;
-  width: 100vw;
+body{
+  margin:0; background:#000; color:#fff;
   font-family: Arial, sans-serif;
-  color: #fff;
-  perspective: 1500px;
+  overflow:auto; perspective:1500px;
 }
 
-/* Mensaje */
-.welcome-message {
-  position: fixed;
-  width: 100%;
-  text-align: center;
-  z-index: 1000;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-  pointer-events: none;
-  top: 10%;
-  font-size: 3em;
-  color: #FFD700;
+.welcome-message{
+  position:fixed; top:10%; left:0; right:0;
+  text-align:center; font-size:3em; color:#FFD700;
+  text-shadow:0 0 10px rgba(255,255,255,.7);
+  pointer-events:none; z-index:1000;
 }
 
-/* Contenedor 3D */
-#galaxy-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  transform-style: preserve-3d;
-  transform: rotateX(70deg) rotateY(0deg) translateZ(0px);
-  transition: transform 0.1s linear;
-  cursor: grab;
-  overflow: visible;
+#galaxy-container{
+  position:relative; width:100%; height:100vh;
+  transform-style:preserve-3d;
+  transform:rotateX(70deg) rotateY(0deg);
+  transition:transform .1s linear; cursor:grab;
+  overflow:visible;
 }
 
-/* ====== ELIMINADO agujero negro ====== */
-/* (Se quita por completo el #black-hole) */
-
-/* ===== Estrellas blancas ===== */
-.white-particle {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background-color: #fff;
-  box-shadow: 0 0 4px #fff;
-  opacity: 0;
-  pointer-events: none;
-  animation: twinkle-white 3s infinite alternate;
-}
-@keyframes twinkle-white {
-  0% { opacity: 0; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0; }
+/* Canvas nebulosa al fondo */
+#nebula{
+  position:absolute; inset:0; z-index:0;
+  display:block; pointer-events:none;
 }
 
-/* ===== Nebulosas RGB tenues (con cambio de tono) ===== */
-.nebula-particle {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  opacity: 0.8;
-  box-shadow: 0 0 5px;
-  pointer-events: none;
-  /* brillo tenue + latido + cambio de tono */
-  animation:
-    nebula-twinkle 4s infinite alternate,
-    nebula-hue 18s linear infinite;
-  filter: hue-rotate(0deg);
+/* Fotos y captions por encima */
+.star-photo{ z-index:10; }
+.love-caption{ z-index:11; }
+
+/* Estrellas blancas */
+.white-particle{
+  position:absolute; width:2px; height:2px; border-radius:50%;
+  background:#fff; box-shadow:0 0 4px #fff; opacity:0;
+  pointer-events:none; animation:twinkle 3s infinite alternate;
 }
-@keyframes nebula-twinkle {
-  0%   { opacity: 0.45; transform: scale(1); }
-  50%  { opacity: 0.9;  transform: scale(1.5); }
-  100% { opacity: 0.45; transform: scale(1); }
-}
-@keyframes nebula-hue {
-  0%   { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
+@keyframes twinkle{
+  0%{opacity:0} 50%{opacity:.8} 100%{opacity:0}
 }
 
-/* ===== Fotos/estrellas ===== */
-.star-photo {
-  position: absolute;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.5);
-  transition: box-shadow 0.3s ease; /* sin transform */
-  cursor: pointer;
-  background-color: #f0f8ff;
-  pointer-events: auto;
+/* Foto redonda estilo “estrella” */
+.star-photo{
+  position:absolute; border-radius:50%; overflow:hidden;
+  box-shadow:0 0 5px 2px rgba(255,255,255,.5);
+  background:#f0f8ff; pointer-events:auto;
+  transform-style:preserve-3d;
+  transform:rotateX(-70deg) rotateY(0deg);
+}
+.star-photo img{ width:100%; height:100%; object-fit:cover; transform:none !important; transition:none !important; }
 
-  /* Billboard */
-  transform-style: preserve-3d;
-  transform: rotateX(-70deg) rotateY(0deg);
+/* Caption bajo cada foto */
+.love-caption{
+  position:absolute; top:100%; left:50%;
+  transform:translateX(-50%); margin-top:8px;
+  font-size:.95em; color:#ffc9de;
+  text-shadow:0 0 8px rgba(255,80,150,.85);
+  white-space:nowrap; pointer-events:none; font-weight:700; letter-spacing:.4px;
 }
 
-/* Quitar el zoom/agrandado en hover */
-.star-photo:hover {
-  transform: rotateX(-70deg) rotateY(0deg) !important;
-  z-index: 2000;
-  box-shadow: 0 0 18px 6px rgba(255, 255, 255, 0.35);
-}
-
-/* Por si el tema tuviera zoom global en imágenes, lo anulamos */
-.star-photo img,
-.star-photo:hover img {
-  transform: none !important;
-  transition: none !important;
-}
-
-.star-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ===== Textos de amor ===== */
-.love-text {
-  position: absolute;
-  font-size: 1.5em;
-  color: #FFB6C1;
-  text-shadow: 0 0 10px #FF1493;
-  animation: pulse-text 3s infinite alternate;
-  z-index: 50;
-  pointer-events: none;
-  white-space: nowrap;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-
-  /* Billboard */
-  transform-style: preserve-3d;
-  transform: rotateX(-70deg) rotateY(0deg);
-}
-@keyframes pulse-text {
-  0%   { transform: rotateX(-70deg) rotateY(0deg) scale(1);   opacity: 0.8; }
-  50%  { transform: rotateX(-70deg) rotateY(0deg) scale(1.05); opacity: 1;   }
-  100% { transform: rotateX(-70deg) rotateY(0deg) scale(1);   opacity: 0.8; }
-}
-
-/* ===== Planeta rosa centrado con brillo ===== */
-.planet-rosa {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: clamp(160px, 18vw, 420px);
-  aspect-ratio: 1 / 1;
-  transform: translate(-50%, -50%) rotateX(-70deg);
-  border-radius: 50%;
-  z-index: 800;
-  pointer-events: none;
-
-  /* Rayas rosas tenues + highlight */
-  background:
-    radial-gradient(120% 120% at 30% 30%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%),
-    repeating-linear-gradient(
-      15deg,
-      #ff7ab5 0 8px,
-      #ff92c4 8px 16px
-    );
-
-  box-shadow:
-    0 0 30px rgba(var(--halo-rosa), 0.35),
-    0 0 80px rgba(var(--halo-rosa), 0.25),
-    inset 0 0 40px rgba(255, 255, 255, 0.15);
-  filter: drop-shadow(0 0 25px rgba(var(--halo-rosa), 0.4));
-  animation: glowPulse 6s ease-in-out infinite;
-}
-
-/* Halo suave alrededor del planeta */
-.planet-rosa::before {
-  content: "";
-  position: absolute;
-  inset: -15%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(var(--halo-rosa), 0.35) 0%,
-    rgba(var(--halo-rosa), 0.18) 40%,
-    rgba(var(--halo-rosa), 0.04) 70%,
-    transparent 80%
-  );
-  filter: blur(8px);
-  z-index: -1;
-}
-
-/* Sombra sutil para volumen */
-.planet-rosa::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(120% 120% at 70% 80%, rgba(0,0,0,0.18) 0%, transparent 65%);
-}
-
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow:
-      0 0 28px rgba(var(--halo-rosa), 0.30),
-      0 0 70px rgba(var(--halo-rosa), 0.20),
-      inset 0 0 38px rgba(255, 255, 255, 0.14);
-  }
-  50% {
-    box-shadow:
-      0 0 40px rgba(var(--halo-rosa), 0.45),
-      0 0 110px rgba(var(--halo-rosa), 0.32),
-      inset 0 0 46px rgba(255, 255, 255, 0.22);
-  }
-}
-/* ===== Nebulosa en canvas de fondo dentro del contenedor ===== */
-#nebula {
-  position: absolute;
-  inset: 0;
-  z-index: 0;             /* detrás de todo lo demás del contenedor */
-  pointer-events: none;
-  display: block;
-}
-
-/* Asegura que fotos y textos queden por encima del canvas */
-.star-photo { z-index: 10; }
-.love-text  { z-index: 11; }
-
-/* Texto bajo cada foto (nuevo) */
-.love-caption {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);    /* centrado bajo la foto */
-  margin-top: 8px;
-  font-size: 0.9em;
-  color: #FFB6C1;
-  text-shadow: 0 0 8px rgba(255, 20, 147, .85);
-  white-space: nowrap;
-  pointer-events: none;
-  font-weight: 700;
-  letter-spacing: .5px;
-}
-
-/* ===== Planeta rosa como ESFERA 3D ===== */
+/* ===== Planeta rosa esférico ===== */
 .planet-rosa{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: clamp(180px, 20vw, 440px);
-  aspect-ratio: 1 / 1;
-  transform: translate(-50%, -50%) rotateX(-70deg);
-  border-radius: 50%;
-  z-index: 800;
-  pointer-events: none;
+  position:absolute; top:50%; left:50%;
+  width:clamp(200px, 22vw, 460px); aspect-ratio:1/1;
+  transform:translate(-50%,-50%) rotateX(-70deg);
+  border-radius:50%; pointer-events:none; z-index:5;
 
-  /* Base: sombreado esférico + color */
   background:
-    radial-gradient(120% 120% at 30% 30%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0) 55%),
-    radial-gradient(85% 85% at 60% 65%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0) 70%),
-    radial-gradient(circle at 50% 50%, #ff8fca 0%, #ff6db7 60%, #ff5aa8 100%);
-
-  /* Bandas envolventes simuladas (ligero “wrap” con perspectiva lateral) */
-  overflow: visible;
+    radial-gradient(120% 120% at 32% 30%, rgba(255,255,255,.65) 0%, rgba(255,255,255,.15) 32%, rgba(255,255,255,0) 58%),
+    radial-gradient(95% 95% at 68% 70%, rgba(0,0,0,.35) 0%, rgba(0,0,0,.10) 45%, rgba(0,0,0,0) 70%),
+    radial-gradient(circle at 50% 50%, #ff8fca 0%, #ff6db7 60%, #ff56a6 100%);
+  box-shadow:
+    0 0 36px rgba(var(--halo-rosa), .30),
+    0 0 90px rgba(var(--halo-rosa), .22),
+    inset 0 0 42px rgba(255,255,255,.18);
+  animation:planetPulse 6s ease-in-out infinite;
 }
 .planet-rosa::before{
-  /* bandas “tenues” que dan volumen; se curvan con rotateY */
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(255,145,200,0.35) 0 10px,
-      rgba(255,108,176,0.35) 10px 20px
-    );
-  transform: rotateY(25deg) scaleX(1.08);
-  mix-blend-mode: overlay;
-  opacity:.8;
-  filter: blur(.3px);
+  content:""; position:absolute; inset:0; border-radius:50%;
+  background: repeating-conic-gradient(from 0deg,
+    rgba(255,145,200,.12) 0 10deg,
+    rgba(255,108,176,.12) 10deg 20deg);
+  mix-blend-mode:overlay; filter:blur(.4px);
 }
 .planet-rosa::after{
-  /* brillo especular pequeño para dar sensación de relieve */
-  content:"";
-  position:absolute;
-  width:55%;
-  height:55%;
-  left:18%;
-  top:18%;
-  border-radius:50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), rgba(255,255,255,.15) 45%, rgba(255,255,255,0) 70%);
-  filter: blur(2px);
-  opacity:.9;
+  content:""; position:absolute; border-radius:50%;
+  width:58%; height:58%; left:18%; top:18%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,.15) 45%, transparent 70%);
+  filter:blur(2px);
 }
-
-/* Halo y pulso suave (opcional; mantiene “vida” sin perder 3D) */
-@keyframes glowPulse {
-  0%,100%{ box-shadow: 0 0 28px rgba(255,120,190,.28), 0 0 70px rgba(255,120,190,.18), inset 0 0 36px rgba(255,255,255,.14); }
-  50%   { box-shadow: 0 0 44px rgba(255,120,190,.45), 0 0 110px rgba(255,120,190,.32), inset 0 0 48px rgba(255,255,255,.22);}
+@keyframes planetPulse{
+  0%,100%{ box-shadow:0 0 32px rgba(var(--halo-rosa), .28), 0 0 80px rgba(var(--halo-rosa), .20), inset 0 0 40px rgba(255,255,255,.14); }
+  50%    { box-shadow:0 0 48px rgba(var(--halo-rosa), .45), 0 0 120px rgba(var(--halo-rosa), .32), inset 0 0 54px rgba(255,255,255,.22); }
 }
-.planet-rosa{ animation: glowPulse 6s ease-in-out infinite; }
-/* Texto debajo de cada foto */
-.love-caption{
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 8px;
-  font-size: 0.9em;
-  color: #FFB6C1;
-  text-shadow: 0 0 8px rgba(255, 20, 147, .85);
-  white-space: nowrap;
-  pointer-events: none;
-  font-weight: 700;
-  letter-spacing: .5px;
-}
-
-/* Asegura que canvas quede detrás de fotos/textos */
-#nebula { z-index: 0; }
-.star-photo { z-index: 10; }
-.love-text  { z-index: 11; }
