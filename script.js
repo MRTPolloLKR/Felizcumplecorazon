@@ -1,34 +1,63 @@
-/// 1. **ACTUALIZA ESTE ARRAY** con las rutas a TUS fotos
-const photos = [
-    './images/foto1.jpg', 
-    './images/foto2.jpg', 
-    './images/foto3.jpg', 
-    './images/foto4.jpg', 
-    './images/foto5.jpg', 
-    './images/foto6.jpg', 
-    './images/foto7.jpg', 
-    './images/foto8.jpg', 
-    // Añade tantas rutas como fotos tengas en la carpeta 'images'
+// 1. **ACTUALIZA ESTE ARRAY** con las rutas a TUS fotos Y LOS TEXTOS PERSONALIZADOS
+const photosData = [
+    { url: './images/foto1.jpg', text: 'Aquí estábamos en la playa. Ese día me di cuenta de lo mucho que amo tu sonrisa.' }, 
+    { url: './images/foto2.jpg', text: 'Recuerdo esta cena, donde hablamos de nuestros sueños. ¡Te amo, soñadora!' }, 
+    { url: './images/foto3.jpg', text: 'Esta foto es mi favorita, refleja lo espontánea y hermosa que eres.' }, 
+    { url: './images/foto4.jpg', text: 'Aquí estábamos en la playa. Ese día me di cuenta de lo mucho que amo tu sonrisa.' }, 
+    { url: './images/foto5.jpg', text: 'Recuerdo esta cena, donde hablamos de nuestros sueños. ¡Te amo, soñadora!' }, 
+    { url: './images/foto6.jpg', text: 'Esta foto es mi favorita, refleja lo espontánea y hermosa que eres.' }, 
+    { url: './images/foto7.jpg', text: 'Aquí estábamos en la playa. Ese día me di cuenta de lo mucho que amo tu sonrisa.' }, 
+    { url: './images/foto8.jpg', text: 'Recuerdo esta cena, donde hablamos de nuestros sueños. ¡Te amo, soñadora!' }, 
+   
+    // Añade el resto de tus fotos con sus mensajes. ¡ESTO ES MUY IMPORTANTE!
 ];
 
 const container = document.getElementById('galaxy-container');
-const numPhotos = photos.length;
-const numHeartStars = 30; // Número de corazones-estrella a añadir
-const RADIUS = 600; // Radio de la órbita de las fotos y corazones (más grande por el agujero negro)
+const numPhotos = photosData.length;
+const numNebulaParticles = 200; // Número de partículas de nebulosa
+const RADIUS = 600; 
 
-// Función para obtener un número aleatorio dentro de un rango
+// === MODAL ELEMENTS ===
+const modal = document.getElementById('photo-modal');
+const modalImage = document.getElementById('modal-image');
+const modalText = document.getElementById('modal-text');
+const closeButton = document.querySelector('.close-button');
+
+// Colores del arcoíris para la nebulosa
+const rainbowColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
+
 function random(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-// === LÓGICA DE POSICIONAMIENTO DE LAS FOTOS EN UNA ESFERA ALREDEDOR DEL AGUJERO NEGRO ===
-photos.forEach((photoUrl, index) => {
+// === FUNCIÓN PARA ABRIR EL MODAL ===
+function openModal(photoUrl, customText) {
+    modalImage.src = photoUrl;
+    modalText.innerHTML = `<h2>Mi Recuerdo Especial</h2>${customText}`;
+    modal.style.display = 'block';
+}
+
+// --- Cerrar el modal ---
+closeButton.onclick = function() { modal.style.display = 'none'; };
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+};
+
+// === LÓGICA DE POSICIONAMIENTO DE FOTOS Y NEBULA ===
+photosData.forEach((data, index) => {
     const photoDiv = document.createElement('div');
     const img = document.createElement('img');
 
-    img.src = photoUrl;
+    img.src = data.url;
     img.alt = `Estrella ${index + 1}`;
     photoDiv.classList.add('star-photo');
+
+    // Añadir el evento click para abrir el modal
+    photoDiv.addEventListener('click', () => {
+        openModal(data.url, data.text);
+    });
 
     // Cálculo de posición esférica
     const phi = Math.acos(-1 + (2 * index) / numPhotos); 
@@ -38,18 +67,13 @@ photos.forEach((photoUrl, index) => {
     const y = RADIUS * Math.sin(theta) * Math.sin(phi);
     const z = RADIUS * Math.cos(phi);
 
-    const size = random(50, 90); // Fotos un poco más pequeñas
+    const size = random(50, 90); 
     
     photoDiv.style.width = `${size}px`;
     photoDiv.style.height = `${size}px`;
     
-    // Aplicar transformaciones 3D. Las fotos se colocan alrededor de un punto central (0,0,0)
-    // El agujero negro ya está trasladado con translateZ en CSS
-    photoDiv.style.transform = `
-        translate3d(${x}px, ${y}px, ${z}px) 
-    `;
+    photoDiv.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
 
-    // Las fotos se centran al inicio y luego se transforman
     photoDiv.style.left = `calc(50% - ${size / 2}px)`;
     photoDiv.style.top = `calc(50% - ${size / 2}px)`;
     
@@ -57,34 +81,28 @@ photos.forEach((photoUrl, index) => {
     container.appendChild(photoDiv);
 });
 
-// === LÓGICA PARA LOS CORAZONES-ESTRELLA ===
-for (let i = 0; i < numHeartStars; i++) {
-    const heart = document.createElement('span');
-    heart.classList.add('heart-star'); // Usamos la nueva clase CSS
+// === LÓGICA PARA PARTÍCULAS NEBULOSA ARCOÍRIS ===
+for (let i = 0; i < numNebulaParticles; i++) {
+    const particle = document.createElement('span');
+    particle.classList.add('nebula-particle');
     
-    heart.innerHTML = '&#x2764;'; // Carácter de corazón ❤️
+    // Asignar color aleatorio del arcoíris
+    const color = rainbowColors[Math.floor(random(0, rainbowColors.length))];
+    particle.style.backgroundColor = color;
+    particle.style.boxShadow = `0 0 5px ${color}`;
 
-    // Posicionamiento esférico para los corazones también
-    const phi = Math.acos(-1 + (2 * i) / numHeartStars);
-    const theta = Math.sqrt(numHeartStars * Math.PI) * phi + random(0, 10); // Ligeramente desfasado
+    // Posicionamiento 3D completamente aleatorio
+    const x = random(-1000, 1000);
+    const y = random(-1000, 1000);
+    const z = random(-1000, 1000); 
+    
+    particle.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+    particle.style.animationDelay = `${random(0, 4)}s`; 
 
-    const x = RADIUS * random(0.8, 1.2) * Math.cos(theta) * Math.sin(phi); // Radio variable
-    const y = RADIUS * random(0.8, 1.2) * Math.sin(theta) * Math.sin(phi);
-    const z = RADIUS * random(0.8, 1.2) * Math.cos(phi);
-    
-    const size = random(1.0, 2.0); // Tamaño de fuente entre 1.0em y 2.0em
-    
-    heart.style.left = `calc(50% - ${size / 2}em)`;
-    heart.style.top = `calc(50% - ${size / 2}em)`;
-    heart.style.fontSize = `${size}em`;
-    
-    heart.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-    heart.style.animationDelay = `${random(0, 3)}s`; // Retraso de animación
-
-    container.appendChild(heart);
+    container.appendChild(particle);
 }
 
-// === LÓGICA DE ARRASTRE (DRAG) PARA ROTAR LA GALAXIA ===
+// === LÓGICA DE ARRASTRE (DRAG) (Mantener) ===
 let isDragging = false;
 let startX = 0;
 let startY = 0;
@@ -95,7 +113,11 @@ function applyRotation() {
     container.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
 }
 
+// --- Eventos de ratón ---
 container.addEventListener('mousedown', (e) => {
+    // No iniciar arrastre si el modal está abierto
+    if (modal.style.display === 'block') return; 
+
     isDragging = true;
     startX = e.clientX;
     startY = e.clientY;
@@ -124,9 +146,11 @@ document.addEventListener('mouseup', () => {
     container.style.cursor = 'grab';
 });
 
-// Mismo manejo para dispositivos táctiles (touch)
+// --- Eventos táctiles (Touch) ---
 container.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    if (modal.style.display === 'block') return; 
+
     isDragging = true;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
