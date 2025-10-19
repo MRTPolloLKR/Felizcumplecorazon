@@ -14,6 +14,7 @@ body {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
+    /* Vista inicial inclinada para ver el plano de órbita */
     transform: rotateX(70deg) rotateY(0deg) translateZ(0px); 
     transition: transform 0.1s linear;
     cursor: grab;
@@ -30,16 +31,26 @@ body {
     background-size: contain; 
     background-repeat: no-repeat;
     background-position: center;
-    /* Centrar, empujar hacia atrás e inclinar, pero AHORA el agujero se mira de frente: */
+    /* El efecto 'Billboard' anula la rotación del padre para que siempre parezca de frente */
     transform: translate(-50%, -50%) translateZ(-50px) rotateX(-70deg) rotateY(0deg); 
     z-index: 500;
     pointer-events: none; 
-    /* El rotateX(-70deg) en CSS anula la rotación inicial de 70deg en el contenedor padre, 
-       haciendo que siempre "mire de frente" a la cámara. */
 }
 /* ---------------------------------------------------------------------- */
 
-/* ------------------ PARTÍCULAS BLANCAS (NUEVAS) ------------------ */
+.welcome-message {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    z-index: 1000;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    pointer-events: none;
+    top: 10%; 
+    font-size: 3em; 
+    color: #FFD700;
+}
+
+/* ------------------ PARTÍCULAS BLANCAS (Estrellas Centelleantes) ------------------ */
 .white-particle {
     position: absolute;
     width: 2px;
@@ -47,7 +58,8 @@ body {
     border-radius: 50%;
     background-color: #fff;
     box-shadow: 0 0 4px #fff;
-    opacity: 0; /* Inicia invisible */
+    opacity: 0;
+    pointer-events: none; /* Ignora clics */
     animation: twinkle-white 3s infinite alternate;
 }
 
@@ -58,7 +70,22 @@ body {
 }
 
 /* ------------------ PARTÍCULAS NEBULOSA ARCOÍRIS ------------------ */
-.nebula-particle { /* Mantenemos el estilo de colores aquí, pero se usa menos en JS */ }
+.nebula-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    opacity: 0.8;
+    box-shadow: 0 0 5px;
+    pointer-events: none; /* Ignora clics */
+    animation: nebula-twinkle 4s infinite alternate;
+}
+
+@keyframes nebula-twinkle {
+    0% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+    100% { opacity: 0.5; transform: scale(1); }
+}
 
 /* Estilos para las Fotos/Estrellas */
 .star-photo {
@@ -71,7 +98,8 @@ body {
     background-color: #f0f8ff;
     pointer-events: auto;
     
-    /* Efecto Billboard: anula la rotación del padre para que siempre mire al usuario */
+    /* Efecto Billboard: El contenedor del padre (galaxy-container) rota 70deg en X, 
+       este elemento lo anula para que la foto mire siempre al usuario. */
     transform-style: preserve-3d;
     transform: rotateX(-70deg) rotateY(0deg); 
 }
@@ -103,7 +131,13 @@ body {
     text-transform: uppercase;
     letter-spacing: 2px;
     
-    /* Efecto Billboard para el texto también */
+    /* Efecto Billboard */
     transform-style: preserve-3d;
     transform: rotateX(-70deg) rotateY(0deg); 
+}
+
+@keyframes pulse-text {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
 }

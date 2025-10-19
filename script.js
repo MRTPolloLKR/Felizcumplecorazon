@@ -1,6 +1,6 @@
 // 1. **ACTUALIZA ESTE ARRAY** con las rutas a TUS fotos
 const photosData = [
-    { url: './images/foto1.jpg', text: 'Momentos inolvidables.' }, 
+    { url: './images/foto7.jpg', text: 'Momentos inolvidables.' }, 
     { url: './images/foto2.jpg', text: 'Mi lugar favorito es a tu lado.' }, 
     { url: './images/foto3.jpg', text: 'Tu sonrisa ilumina mi mundo.' }, 
     { url: './images/foto4.jpg', text: 'Cada aventura contigo es un tesoro.' }, 
@@ -15,25 +15,22 @@ const loveTexts = [
     'Eres Mi Todo',
     'Te Amo',
     'Para Siempre',
-    'Día del Novio', 
     'Mi Dulce Compañera',
     'Contigo en cada estrella',
     'Nuestra historia',
-    'Unidos por el destino',
     'Mi corazón es tuyo',
     'Junto a ti, soy feliz',
     'Amor eterno',
     'Eres mi universo',
     'Mi sol, mi luna',
-    'Mi hermosa flor',
 ];
 
 
 const container = document.getElementById('galaxy-container');
 const numPhotos = photosData.length;
 const numLoveTexts = loveTexts.length;
-const numNebulaParticles = 100; // Partículas de color
-const numWhiteParticles = 300; // Partículas blancas centelleantes (estrellas)
+const numNebulaParticles = 100;
+const numWhiteParticles = 300;
 const RADIUS_ORBIT = 400; 
 
 const rainbowColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
@@ -42,7 +39,7 @@ function random(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-// === LÓGICA DE POSICIONAMIENTO DE FOTOS Y TEXTOS (ESTÁTICAS) ===
+// === LÓGICA DE POSICIONAMIENTO DE FOTOS Y TEXTOS ===
 
 // 1. Fotos en Órbita
 photosData.forEach((data, index) => {
@@ -53,8 +50,8 @@ photosData.forEach((data, index) => {
     img.alt = `Estrella ${index + 1}`;
     photoDiv.classList.add('star-photo');
 
-    // Cálculo de posición en el plano XZ
-    const angle = (index / numPhotos) * 2 * Math.PI + random(-0.5, 0.5); 
+    // Posición en el plano XZ (Órbita)
+    const angle = (index / numPhotos) * 2 * Math.PI + random(-0.5, 0.5);
     const radius = RADIUS_ORBIT + random(-80, 80); 
 
     const x = radius * Math.cos(angle);
@@ -66,7 +63,7 @@ photosData.forEach((data, index) => {
     photoDiv.style.width = `${size}px`;
     photoDiv.style.height = `${size}px`;
     
-    // Aplicamos la posición de la órbita. La rotación de 'billboard' se aplica en CSS.
+    // La posición 3D se añade al transform, el 'billboard' está en CSS.
     photoDiv.style.transform += ` translate3d(${x}px, ${y}px, ${z}px)`;
 
     photoDiv.style.left = `calc(50% - ${size / 2}px)`;
@@ -89,7 +86,6 @@ loveTexts.forEach((text, index) => {
     const y = random(-50, 50); 
     const z = radius * Math.sin(angle); 
     
-    // Aplicamos la posición de la órbita. La rotación de 'billboard' se aplica en CSS.
     textDiv.style.transform += ` translate3d(${x}px, ${y}px, ${z}px)`;
 
     textDiv.style.left = `calc(50%)`;
@@ -104,14 +100,11 @@ for (let i = 0; i < numWhiteParticles; i++) {
     const particle = document.createElement('span');
     particle.classList.add('white-particle');
     
-    // Posicionamiento 3D completamente aleatorio
     const x = random(-2000, 2000);
     const y = random(-2000, 2000);
     const z = random(-2000, 2000); 
     
     particle.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-    
-    // Retraso de animación aleatorio y duración ligeramente variable
     particle.style.animationDelay = `${random(0, 3)}s`;
     particle.style.animationDuration = `${random(2.5, 3.5)}s`; 
 
@@ -127,7 +120,6 @@ for (let i = 0; i < numNebulaParticles; i++) {
     particle.style.backgroundColor = color;
     particle.style.boxShadow = `0 0 5px ${color}`;
 
-    // Posicionamiento 3D en un volumen alrededor del centro
     const x = random(-1500, 1500);
     const y = random(-1500, 1500);
     const z = random(-1500, 1500); 
@@ -139,11 +131,11 @@ for (let i = 0; i < numNebulaParticles; i++) {
 }
 
 
-// === LÓGICA DE ARRASTRE (DRAG) (Mantener) ===
+// === LÓGICA DE ARRASTRE (DRAG) 360° LIBRE ===
 let isDragging = false;
 let startX = 0;
 let startY = 0;
-let rotX = 70; 
+let rotX = 70; // Rotación inicial
 let rotY = 0; 
 
 function applyRotation() {
@@ -164,10 +156,10 @@ document.addEventListener('mousemove', (e) => {
     const deltaX = e.clientX - startX;
     const deltaY = e.clientY - startY;
 
-    rotY += deltaX / 5; 
-    rotX -= deltaY / 5; 
+    rotY += deltaX / 5; // Rotación Y (horizontal)
+    rotX -= deltaY / 5; // Rotación X (vertical)
     
-    rotX = Math.max(30, Math.min(150, rotX)); 
+    // NO hay límites de rotación aquí, permitiendo 360° en ambos ejes.
     
     applyRotation();
 
@@ -196,8 +188,6 @@ document.addEventListener('touchmove', (e) => {
 
     rotY += deltaX / 5;
     rotX -= deltaY / 5;
-
-    rotX = Math.max(30, Math.min(150, rotX));
     
     applyRotation();
 
