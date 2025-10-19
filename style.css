@@ -1,143 +1,216 @@
+/* ===== Layout general ===== */
+:root{
+  --halo-rosa: 255,120,190;
+}
+html, body { height: 100%; }
 body {
-    background-color: #000;
-    margin: 0;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-    font-family: 'Arial', sans-serif;
-    color: #fff;
-    perspective: 1500px;
+  background-color: #000;
+  margin: 0;
+  overflow: auto;             /* movimiento libre de scroll */
+  height: 100vh;
+  width: 100vw;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  perspective: 1500px;
 }
 
-#galaxy-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    /* Vista inicial inclinada para ver el plano de órbita */
-    transform: rotateX(70deg) rotateY(0deg) translateZ(0px); 
-    transition: transform 0.1s linear;
-    cursor: grab;
-}
-
-/* ------------------ AGUJERO NEGRO con DISCO ------------------ */
-#black-hole {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 700px; 
-    height: 400px; 
-    background-image: url('./images/black_hole_disk.jpg'); 
-    background-size: contain; 
-    background-repeat: no-repeat;
-    background-position: center;
-    /* El efecto 'Billboard' anula la rotación del padre para que siempre parezca de frente */
-    transform: translate(-50%, -50%) translateZ(-50px) rotateX(-70deg) rotateY(0deg); 
-    z-index: 500;
-    pointer-events: none; 
-}
-/* ---------------------------------------------------------------------- */
-
+/* Mensaje */
 .welcome-message {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    z-index: 1000;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-    pointer-events: none;
-    top: 10%; 
-    font-size: 3em; 
-    color: #FFD700;
+  position: fixed;
+  width: 100%;
+  text-align: center;
+  z-index: 1000;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  top: 10%;
+  font-size: 3em;
+  color: #FFD700;
 }
 
-/* ------------------ PARTÍCULAS BLANCAS (Estrellas Centelleantes) ------------------ */
+/* Contenedor 3D */
+#galaxy-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  transform-style: preserve-3d;
+  transform: rotateX(70deg) rotateY(0deg) translateZ(0px);
+  transition: transform 0.1s linear;
+  cursor: grab;
+  overflow: visible;
+}
+
+/* ====== ELIMINADO agujero negro ====== */
+/* (Se quita por completo el #black-hole) */
+
+/* ===== Estrellas blancas ===== */
 .white-particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    background-color: #fff;
-    box-shadow: 0 0 4px #fff;
-    opacity: 0;
-    pointer-events: none; /* Ignora clics */
-    animation: twinkle-white 3s infinite alternate;
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 4px #fff;
+  opacity: 0;
+  pointer-events: none;
+  animation: twinkle-white 3s infinite alternate;
 }
-
 @keyframes twinkle-white {
-    0% { opacity: 0; }
-    50% { opacity: 0.8; }
-    100% { opacity: 0; }
+  0% { opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0; }
 }
 
-/* ------------------ PARTÍCULAS NEBULOSA ARCOÍRIS ------------------ */
+/* ===== Nebulosas RGB tenues (con cambio de tono) ===== */
 .nebula-particle {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    opacity: 0.8;
-    box-shadow: 0 0 5px;
-    pointer-events: none; /* Ignora clics */
-    animation: nebula-twinkle 4s infinite alternate;
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  opacity: 0.8;
+  box-shadow: 0 0 5px;
+  pointer-events: none;
+  /* brillo tenue + latido + cambio de tono */
+  animation:
+    nebula-twinkle 4s infinite alternate,
+    nebula-hue 18s linear infinite;
+  filter: hue-rotate(0deg);
 }
-
 @keyframes nebula-twinkle {
-    0% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.5); }
-    100% { opacity: 0.5; transform: scale(1); }
+  0%   { opacity: 0.45; transform: scale(1); }
+  50%  { opacity: 0.9;  transform: scale(1.5); }
+  100% { opacity: 0.45; transform: scale(1); }
+}
+@keyframes nebula-hue {
+  0%   { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
 }
 
-/* Estilos para las Fotos/Estrellas */
+/* ===== Fotos/estrellas ===== */
 .star-photo {
-    position: absolute;
-    border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.5);
-    transition: transform 0.5s, box-shadow 0.5s;
-    cursor: pointer;
-    background-color: #f0f8ff;
-    pointer-events: auto;
-    
-    /* Efecto Billboard: El contenedor del padre (galaxy-container) rota 70deg en X, 
-       este elemento lo anula para que la foto mire siempre al usuario. */
-    transform-style: preserve-3d;
-    transform: rotateX(-70deg) rotateY(0deg); 
+  position: absolute;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.5);
+  transition: box-shadow 0.3s ease; /* sin transform */
+  cursor: pointer;
+  background-color: #f0f8ff;
+  pointer-events: auto;
+
+  /* Billboard */
+  transform-style: preserve-3d;
+  transform: rotateX(-70deg) rotateY(0deg);
 }
 
+/* Quitar el zoom/agrandado en hover */
 .star-photo:hover {
-    /* El zoom ahora se hace localmente */
-    transform: rotateX(-70deg) rotateY(0deg) scale(3) translateZ(300px) !important; 
-    z-index: 2000;
-    box-shadow: 0 0 30px 10px #FF4500;
+  transform: rotateX(-70deg) rotateY(0deg) !important;
+  z-index: 2000;
+  box-shadow: 0 0 18px 6px rgba(255, 255, 255, 0.35);
+}
+
+/* Por si el tema tuviera zoom global en imágenes, lo anulamos */
+.star-photo img,
+.star-photo:hover img {
+  transform: none !important;
+  transition: none !important;
 }
 
 .star-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* ------------------ TEXTOS DE AMOR ------------------ */
+/* ===== Textos de amor ===== */
 .love-text {
-    position: absolute;
-    font-size: 1.5em; 
-    color: #FFB6C1; 
-    text-shadow: 0 0 10px #FF1493;
-    animation: pulse-text 3s infinite alternate; 
-    z-index: 50;
-    pointer-events: none; 
-    white-space: nowrap; 
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    
-    /* Efecto Billboard */
-    transform-style: preserve-3d;
-    transform: rotateX(-70deg) rotateY(0deg); 
+  position: absolute;
+  font-size: 1.5em;
+  color: #FFB6C1;
+  text-shadow: 0 0 10px #FF1493;
+  animation: pulse-text 3s infinite alternate;
+  z-index: 50;
+  pointer-events: none;
+  white-space: nowrap;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  /* Billboard */
+  transform-style: preserve-3d;
+  transform: rotateX(-70deg) rotateY(0deg);
+}
+@keyframes pulse-text {
+  0%   { transform: rotateX(-70deg) rotateY(0deg) scale(1);   opacity: 0.8; }
+  50%  { transform: rotateX(-70deg) rotateY(0deg) scale(1.05); opacity: 1;   }
+  100% { transform: rotateX(-70deg) rotateY(0deg) scale(1);   opacity: 0.8; }
 }
 
-@keyframes pulse-text {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
+/* ===== Planeta rosa centrado con brillo ===== */
+.planet-rosa {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(160px, 18vw, 420px);
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%) rotateX(-70deg);
+  border-radius: 50%;
+  z-index: 800;
+  pointer-events: none;
+
+  /* Rayas rosas tenues + highlight */
+  background:
+    radial-gradient(120% 120% at 30% 30%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%),
+    repeating-linear-gradient(
+      15deg,
+      #ff7ab5 0 8px,
+      #ff92c4 8px 16px
+    );
+
+  box-shadow:
+    0 0 30px rgba(var(--halo-rosa), 0.35),
+    0 0 80px rgba(var(--halo-rosa), 0.25),
+    inset 0 0 40px rgba(255, 255, 255, 0.15);
+  filter: drop-shadow(0 0 25px rgba(var(--halo-rosa), 0.4));
+  animation: glowPulse 6s ease-in-out infinite;
+}
+
+/* Halo suave alrededor del planeta */
+.planet-rosa::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(var(--halo-rosa), 0.35) 0%,
+    rgba(var(--halo-rosa), 0.18) 40%,
+    rgba(var(--halo-rosa), 0.04) 70%,
+    transparent 80%
+  );
+  filter: blur(8px);
+  z-index: -1;
+}
+
+/* Sombra sutil para volumen */
+.planet-rosa::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(120% 120% at 70% 80%, rgba(0,0,0,0.18) 0%, transparent 65%);
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 28px rgba(var(--halo-rosa), 0.30),
+      0 0 70px rgba(var(--halo-rosa), 0.20),
+      inset 0 0 38px rgba(255, 255, 255, 0.14);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(var(--halo-rosa), 0.45),
+      0 0 110px rgba(var(--halo-rosa), 0.32),
+      inset 0 0 46px rgba(255, 255, 255, 0.22);
+  }
 }
