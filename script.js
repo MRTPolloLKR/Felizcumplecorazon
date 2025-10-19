@@ -27,6 +27,18 @@ const RADIUS_ORBIT = 400;
 const rainbowColors = ['#FF0000','#FF7F00','#FFFF00','#00FF00','#0000FF','#4B0082','#9400D3'];
 function random(min, max) { return Math.random() * (max - min) + min; }
 
+/* === Inyecta el canvas de nebulosa (antes de usarlo) === */
+let nebulaCanvas = document.getElementById('nebula');
+if (!nebulaCanvas) {
+  nebulaCanvas = document.createElement('canvas');
+  nebulaCanvas.id = 'nebula';
+  nebulaCanvas.style.position = 'absolute';
+  nebulaCanvas.style.inset = '0';
+  nebulaCanvas.style.zIndex = '0';           // detrás de fotos/textos
+  nebulaCanvas.style.pointerEvents = 'none';
+  container.insertBefore(nebulaCanvas, container.firstChild);
+}
+
 /* ===== 1. Fotos en órbita ===== */
 photosData.forEach((data, index) => {
   const photoDiv = document.createElement('div');
@@ -52,10 +64,17 @@ photosData.forEach((data, index) => {
   photoDiv.style.transform += ` translate3d(${x}px, ${y}px, ${z}px)`;
 
   photoDiv.appendChild(img);
+
+  // === NUEVO: caption aleatorio debajo de la foto ===
+  const caption = document.createElement('div');
+  caption.classList.add('love-caption');
+  caption.textContent = loveTexts[Math.floor(random(0, numLoveTexts))] || '';
+  photoDiv.appendChild(caption);
+
   container.appendChild(photoDiv);
 });
 
-/* ===== 2. Textos de amor en órbita ===== */
+/* ===== 2. Textos de amor en órbita (si también los quieres flotando aparte) ===== */
 loveTexts.forEach((text, index) => {
   const textDiv = document.createElement('div');
   textDiv.classList.add('love-text');
@@ -159,3 +178,79 @@ document.addEventListener('touchmove', (e) => {
 document.addEventListener('touchend', () => {
   isDragging = false;
 });
+
+/* === Nebulosas RGB tenues en canvas === */
+(function(){
+  const cvs = nebulaCanvas;               // ahora sí existe
+  const ctx = cvs.getContext('2d');
+  let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  let W, H;
+
+  function resize(){
+    const rect = container.getBoundingClientRect();
+    W = Math.floor(rect.width  * dpr);
+    H = Math.floor(rect.height * dpr);
+    cvs.width  = W;
+    cvs.height = H;
+    cvs.style.width  = rect.width  + 'px';
+    cvs.style.height = rect.height + 'px';
+  }
+
+  const BLOBS = 22; // número de nubes
+  const blobs = [];
+  function R(a,b){ return a + Math.random()*(b-a); }
+
+  function init(){
+    blobs.length = 0;
+    for(let i=0;i<BLOBS;i++){
+      blobs.push({
+        x: Math.random(), y: Math.random(),
+        r: R(120, 380),
+        vx: R(-0.03, 0.03),
+        vy: R(-0.03, 0.03),
+        hue: Math.floor(R(0,360)),
+        alpha: R(0.05, 0.12)
+      });
+    }
+  }
+
+  let t = 0;
+  function loop(){
+    t += 0.003;
+
+    // Fondo espacial muy oscuro
+    ctx.fillStyle = 'rgb(8,10,14)';
+    ctx.fillRect(0,0,W,H);
+
+    ctx.globalCompositeOperation = 'lighter';
+    for(const b of blobs){
+      // movimiento lento y envolvente
+      b.x = (b.x + b.vx*0.0015*(W)) % 1;
+      b.y = (b.y + b.vy*0.0015*(H)) % 1;
+      if (b.x < 0) b.x += 1;
+      if (b.y < 0) b.y += 1;
+
+      const cx = b.x * W;
+      const cy = b.y * H;
+      const hue = (b.hue + t*60) % 360;
+
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, b.r*dpr);
+      grad.addColorStop(0.0, `hsla(${hue}, 80%, 65%, ${b.alpha})`);
+      grad.addColorStop(0.5, `hsla(${(hue+40)%360}, 75%, 55%, ${b.alpha*0.55})`);
+      grad.addColorStop(1.0, `hsla(${(hue+80)%360}, 70%, 45%, 0)`);
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, b.r*dpr, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    requestAnimationFrame(loop);
+  }
+
+  // init
+  resize();
+  init();
+  loop();
+  window.addEventListener('resize', resize, { passive:true });
+})();
