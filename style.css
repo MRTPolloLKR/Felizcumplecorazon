@@ -1,4 +1,3 @@
-:root { --halo: 200,220,255; } /* tono frío del brillo */
 html, body { height: 100%; }
 body{
   margin:0; background:#000; color:#fff;
@@ -15,62 +14,44 @@ body{
   overflow:visible;
 }
 
-/* ===== Esfera central (neutra) ===== */
-.esfera-centro{
-  position:absolute; top:50%; left:50%;
-  width:clamp(220px, 24vw, 520px); aspect-ratio:1/1;
-  transform:translate(-50%,-50%) rotateX(-70deg);
-  border-radius:50%; pointer-events:none; z-index:5;
-  /* sombreado esférico + ligero color frío */
-  background:
-    radial-gradient(120% 120% at 30% 28%, rgba(255,255,255,.85) 0%, rgba(255,255,255,.20) 32%, rgba(255,255,255,0) 58%),
-    radial-gradient(95% 95% at 70% 72%, rgba(0,0,0,.35) 0%, rgba(0,0,0,.10) 45%, rgba(0,0,0,0) 70%),
-    radial-gradient(circle at 50% 50%, #f0f6ff 0%, #d3e3ff 60%, #c2d6ff 100%);
-  box-shadow:
-    0 0 46px rgba(var(--halo), .35),
-    0 0 120px rgba(var(--halo), .28),
-    inset 0 0 48px rgba(255,255,255,.22);
-  animation: esferaPulse 7s ease-in-out infinite;
-}
-@keyframes esferaPulse{
-  0%,100%{ box-shadow:0 0 40px rgba(var(--halo), .30), 0 0 110px rgba(var(--halo), .22), inset 0 0 44px rgba(255,255,255,.18); }
-  50%    { box-shadow:0 0 64px rgba(var(--halo), .48), 0 0 160px rgba(var(--halo), .34), inset 0 0 58px rgba(255,255,255,.26); }
+/* Canvas de estrellas detrás */
+#stars{
+  position:absolute; inset:0; z-index:0;
+  display:block; pointer-events:none;
+  background: transparent;
 }
 
-/* ===== Estrellas blancas (más grandes y brillantes) ===== */
+/* ===== Pelota 3D centrada ===== */
+.pelota-3d{
+  position:absolute; top:50%; left:50%;
+  width:clamp(240px, 26vw, 540px); aspect-ratio:1/1;
+  transform:translate(-50%,-50%) rotateX(-70deg); /* mira al usuario */
+  border-radius:50%; pointer-events:none; z-index:5;
+
+  /* Sombreado esférico neutro + brillo especular */
+  background:
+    radial-gradient(120% 120% at 30% 28%, rgba(255,255,255,.85) 0%, rgba(255,255,255,.18) 34%, rgba(255,255,255,0) 58%),
+    radial-gradient(95% 95% at 70% 72%, rgba(0,0,0,.35) 0%, rgba(0,0,0,.10) 45%, rgba(0,0,0,0) 70%),
+    radial-gradient(circle at 50% 50%, #f5f7fb 0%, #dfe6f6 60%, #c9d6f0 100%);
+  box-shadow:
+    0 0 44px rgba(210,220,255,.35),
+    0 0 120px rgba(210,220,255,.28),
+    inset 0 0 52px rgba(255,255,255,.22);
+  animation: spinZ 40s linear infinite;
+}
+
+/* Giro muy sutil para “pelota” viva */
+@keyframes spinZ{
+  0%   { transform:translate(-50%,-50%) rotateX(-70deg) rotateZ(0deg); }
+  100% { transform:translate(-50%,-50%) rotateX(-70deg) rotateZ(360deg); }
+}
+
+/* Estrellas generadas por JS: no requieren estilos extra,
+   pero si añades span como fallback, estos ayudan: */
 .white-particle{
   position:absolute;
-  width:4px; height:4px;                 /* antes 2px */
-  border-radius:50%;
+  width:4px; height:4px; border-radius:50%;
   background:#fff;
-  box-shadow:
-    0 0 8px #fff,
-    0 0 18px rgba(255,255,255,.9);       /* brillo extra */
-  opacity:0;
+  box-shadow:0 0 10px #fff, 0 0 20px rgba(255,255,255,.95);
   pointer-events:none;
-  animation:twinkle 3s infinite alternate;
-}
-@keyframes twinkle{
-  0%   { opacity:0;   transform:scale(0.9); }
-  50%  { opacity:1;   transform:scale(1.6); } /* destello más visible */
-  100% { opacity:0.1; transform:scale(1.0); }
-}
-
-/* Fotos redondas (sin zoom en hover) */
-.star-photo{
-  position:absolute; border-radius:50%; overflow:hidden;
-  box-shadow:0 0 6px 2px rgba(255,255,255,.55);
-  background:#f0f8ff; pointer-events:auto;
-  transform-style:preserve-3d;
-  transform:rotateX(-70deg) rotateY(0deg);
-}
-.star-photo img{ width:100%; height:100%; object-fit:cover; transform:none !important; transition:none !important; }
-
-/* Caption bajo cada foto (si lo usas) */
-.love-caption{
-  position:absolute; top:100%; left:50%;
-  transform:translateX(-50%); margin-top:8px;
-  font-size:.95em; color:#ffc9de;
-  text-shadow:0 0 8px rgba(255,80,150,.85);
-  white-space:nowrap; pointer-events:none; font-weight:700; letter-spacing:.4px;
 }
