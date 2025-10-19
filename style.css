@@ -6,8 +6,7 @@ body {
     width: 100vw;
     font-family: 'Arial', sans-serif;
     color: #fff;
-    /* Perspectiva amplia */
-    perspective: 1500px;
+    perspective: 1500px; /* Perspectiva para el efecto 3D */
 }
 
 #galaxy-container {
@@ -16,26 +15,26 @@ body {
     height: 100%;
     transform-style: preserve-3d;
     /* Vista inicial inclinada para ver el plano de órbita */
-    transform: rotateX(70deg) rotateY(0deg); 
+    transform: rotateX(70deg) rotateY(0deg) translateZ(0px); 
     transition: transform 0.1s linear;
     cursor: grab;
 }
 
-/* ------------------ AGUJERO NEGRO con DISCO (IMAGEN) ------------------ */
+/* ------------------ AGUJERO NEGRO con DISCO (IMAGEN TIPO SATURNO) ------------------ */
 #black-hole {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 700px; 
-    height: 400px;
-    background-image: url('./images/black_hole_disk.png'); /* <--- TU IMAGEN DE REFERENCIA AQUÍ */
+    width: 700px; /* Ajusta el tamaño de la imagen del agujero negro */
+    height: 400px; /* Ajusta la altura si es una imagen rectangular */
+    background-image: url('./images/black_hole_disk.jpg'); /* <--- TU IMAGEN DE REFERENCIA AQUÍ */
     background-size: contain; 
     background-repeat: no-repeat;
     background-position: center;
-    /* Centrar, empujar un poco hacia atrás para la perspectiva y rotar para coincidir con la órbita */
+    /* Centrar, empujar hacia atrás en Z, e inclinar para que coincida con la vista */
     transform: translate(-50%, -50%) translateZ(-50px) rotateX(10deg); 
     z-index: 500;
-    pointer-events: none;
+    pointer-events: none; /* No queremos arrastrar el agujero negro */
 }
 /* ---------------------------------------------------------------------- */
 
@@ -45,13 +44,13 @@ body {
     text-align: center;
     z-index: 1000;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-    pointer-events: none;
+    pointer-events: none; /* No interactúa con el arrastre */
     top: 10%; 
     font-size: 3em; 
     color: #FFD700;
 }
 
-/* ------------------ PARTÍCULAS NEBULOSA ARCOÍRIS (Mantener) ------------------ */
+/* ------------------ PARTÍCULAS NEBULOSA ARCOÍRIS ------------------ */
 .nebula-particle {
     position: absolute;
     width: 3px;
@@ -69,15 +68,6 @@ body {
 }
 /* ----------------------------------------------------------------- */
 
-/* ------------------ ESTILOS DEL MODAL (Mantener) ------------------ */
-.modal { /* ... estilos del modal ... */ }
-.modal-content { /* ... */ }
-.close-button { /* ... */ }
-.modal-body { /* ... */ }
-#modal-image { /* ... */ }
-#modal-text { /* ... */ }
-/* Puedes copiar el resto de los estilos del modal del código anterior */
-
 /* Estilos para las Fotos/Estrellas */
 .star-photo {
     position: absolute;
@@ -87,7 +77,7 @@ body {
     transition: transform 0.5s, box-shadow 0.5s;
     cursor: pointer;
     background-color: #f0f8ff;
-    pointer-events: auto;
+    pointer-events: auto; /* Las fotos son interactivas al clickear */
 }
 
 .star-photo:hover {
@@ -102,3 +92,25 @@ body {
     height: 100%;
     object-fit: cover;
 }
+
+/* ------------------ ESTILOS PARA TEXTOS DE AMOR ------------------ */
+.love-text {
+    position: absolute;
+    font-size: 1.5em; /* Tamaño base */
+    color: #FFB6C1; /* Rosa claro */
+    text-shadow: 0 0 10px #FF1493;
+    animation: pulse-text 3s infinite alternate; /* Animación sutil */
+    z-index: 50;
+    pointer-events: none; /* No son interactivos */
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+@keyframes pulse-text {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+/* ----------------------------------------------------------------- */
