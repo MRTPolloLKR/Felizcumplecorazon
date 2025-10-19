@@ -6,7 +6,7 @@ body {
     width: 100vw;
     font-family: 'Arial', sans-serif;
     color: #fff;
-    perspective: 1500px; /* Perspectiva para el efecto 3D */
+    perspective: 1500px;
 }
 
 #galaxy-container {
@@ -14,59 +14,51 @@ body {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    /* Vista inicial inclinada para ver el plano de órbita */
     transform: rotateX(70deg) rotateY(0deg) translateZ(0px); 
     transition: transform 0.1s linear;
     cursor: grab;
 }
 
-/* ------------------ AGUJERO NEGRO con DISCO (IMAGEN TIPO SATURNO) ------------------ */
+/* ------------------ AGUJERO NEGRO con DISCO ------------------ */
 #black-hole {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 700px; /* Ajusta el tamaño de la imagen del agujero negro */
-    height: 400px; /* Ajusta la altura si es una imagen rectangular */
-    background-image: url('./images/black_hole_disk.jpg'); /* <--- TU IMAGEN DE REFERENCIA AQUÍ */
+    width: 700px; 
+    height: 400px; 
+    background-image: url('./images/black_hole_disk.jpg'); 
     background-size: contain; 
     background-repeat: no-repeat;
     background-position: center;
-    /* Centrar, empujar hacia atrás en Z, e inclinar para que coincida con la vista */
-    transform: translate(-50%, -50%) translateZ(-50px) rotateX(10deg); 
+    /* Centrar, empujar hacia atrás e inclinar, pero AHORA el agujero se mira de frente: */
+    transform: translate(-50%, -50%) translateZ(-50px) rotateX(-70deg) rotateY(0deg); 
     z-index: 500;
-    pointer-events: none; /* No queremos arrastrar el agujero negro */
+    pointer-events: none; 
+    /* El rotateX(-70deg) en CSS anula la rotación inicial de 70deg en el contenedor padre, 
+       haciendo que siempre "mire de frente" a la cámara. */
 }
 /* ---------------------------------------------------------------------- */
 
-.welcome-message {
+/* ------------------ PARTÍCULAS BLANCAS (NUEVAS) ------------------ */
+.white-particle {
     position: absolute;
-    width: 100%;
-    text-align: center;
-    z-index: 1000;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-    pointer-events: none; /* No interactúa con el arrastre */
-    top: 10%; 
-    font-size: 3em; 
-    color: #FFD700;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 0 4px #fff;
+    opacity: 0; /* Inicia invisible */
+    animation: twinkle-white 3s infinite alternate;
+}
+
+@keyframes twinkle-white {
+    0% { opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0; }
 }
 
 /* ------------------ PARTÍCULAS NEBULOSA ARCOÍRIS ------------------ */
-.nebula-particle {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    opacity: 0.8;
-    box-shadow: 0 0 5px;
-    animation: nebula-twinkle 4s infinite alternate;
-}
-
-@keyframes nebula-twinkle {
-    0% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.5); }
-    100% { opacity: 0.5; transform: scale(1); }
-}
-/* ----------------------------------------------------------------- */
+.nebula-particle { /* Mantenemos el estilo de colores aquí, pero se usa menos en JS */ }
 
 /* Estilos para las Fotos/Estrellas */
 .star-photo {
@@ -77,12 +69,16 @@ body {
     transition: transform 0.5s, box-shadow 0.5s;
     cursor: pointer;
     background-color: #f0f8ff;
-    pointer-events: auto; /* Las fotos son interactivas al clickear */
+    pointer-events: auto;
+    
+    /* Efecto Billboard: anula la rotación del padre para que siempre mire al usuario */
+    transform-style: preserve-3d;
+    transform: rotateX(-70deg) rotateY(0deg); 
 }
 
 .star-photo:hover {
-    /* Las fotos deben saltar hacia adelante (Z) al hacer hover */
-    transform: scale(3) translateZ(300px) !important; 
+    /* El zoom ahora se hace localmente */
+    transform: rotateX(-70deg) rotateY(0deg) scale(3) translateZ(300px) !important; 
     z-index: 2000;
     box-shadow: 0 0 30px 10px #FF4500;
 }
@@ -93,24 +89,21 @@ body {
     object-fit: cover;
 }
 
-/* ------------------ ESTILOS PARA TEXTOS DE AMOR ------------------ */
+/* ------------------ TEXTOS DE AMOR ------------------ */
 .love-text {
     position: absolute;
-    font-size: 1.5em; /* Tamaño base */
-    color: #FFB6C1; /* Rosa claro */
+    font-size: 1.5em; 
+    color: #FFB6C1; 
     text-shadow: 0 0 10px #FF1493;
-    animation: pulse-text 3s infinite alternate; /* Animación sutil */
+    animation: pulse-text 3s infinite alternate; 
     z-index: 50;
-    pointer-events: none; /* No son interactivos */
-    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+    pointer-events: none; 
+    white-space: nowrap; 
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 2px;
+    
+    /* Efecto Billboard para el texto también */
+    transform-style: preserve-3d;
+    transform: rotateX(-70deg) rotateY(0deg); 
 }
-
-@keyframes pulse-text {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
-}
-/* ----------------------------------------------------------------- */

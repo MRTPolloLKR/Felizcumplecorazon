@@ -15,7 +15,7 @@ const loveTexts = [
     'Eres Mi Todo',
     'Te Amo',
     'Para Siempre',
-    'Día del Novio', // O algún recuerdo especial
+    'Día del Novio', 
     'Mi Dulce Compañera',
     'Contigo en cada estrella',
     'Nuestra historia',
@@ -32,17 +32,19 @@ const loveTexts = [
 const container = document.getElementById('galaxy-container');
 const numPhotos = photosData.length;
 const numLoveTexts = loveTexts.length;
-const numNebulaParticles = 200; 
-const RADIUS_ORBIT = 400; // Radio de la órbita de fotos y textos
+const numNebulaParticles = 100; // Partículas de color
+const numWhiteParticles = 300; // Partículas blancas centelleantes (estrellas)
+const RADIUS_ORBIT = 400; 
 
-// Colores del arcoíris (Mantener)
 const rainbowColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
 
 function random(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-// === LÓGICA DE POSICIONAMIENTO DE FOTOS EN ÓRBITA PLANA ===
+// === LÓGICA DE POSICIONAMIENTO DE FOTOS Y TEXTOS (ESTÁTICAS) ===
+
+// 1. Fotos en Órbita
 photosData.forEach((data, index) => {
     const photoDiv = document.createElement('div');
     const img = document.createElement('img');
@@ -51,13 +53,12 @@ photosData.forEach((data, index) => {
     img.alt = `Estrella ${index + 1}`;
     photoDiv.classList.add('star-photo');
 
-    // Cálculo de posición en el plano XZ (Órbita circular 2D)
-    // Distribuir en un anillo alrededor del agujero negro
-    const angle = (index / numPhotos) * 2 * Math.PI + random(-0.5, 0.5); // Ángulo con variación
-    const radius = RADIUS_ORBIT + random(-80, 80); // Variación en el radio
+    // Cálculo de posición en el plano XZ
+    const angle = (index / numPhotos) * 2 * Math.PI + random(-0.5, 0.5); 
+    const radius = RADIUS_ORBIT + random(-80, 80); 
 
     const x = radius * Math.cos(angle);
-    const y = random(-30, 30); // Pequeña variación vertical para "flotar" ligeramente
+    const y = random(-30, 30); 
     const z = radius * Math.sin(angle); 
 
     const size = random(60, 100); 
@@ -65,7 +66,8 @@ photosData.forEach((data, index) => {
     photoDiv.style.width = `${size}px`;
     photoDiv.style.height = `${size}px`;
     
-    photoDiv.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+    // Aplicamos la posición de la órbita. La rotación de 'billboard' se aplica en CSS.
+    photoDiv.style.transform += ` translate3d(${x}px, ${y}px, ${z}px)`;
 
     photoDiv.style.left = `calc(50% - ${size / 2}px)`;
     photoDiv.style.top = `calc(50% - ${size / 2}px)`;
@@ -74,31 +76,49 @@ photosData.forEach((data, index) => {
     container.appendChild(photoDiv);
 });
 
-// === LÓGICA PARA TEXTOS DE AMOR EN ÓRBITA ===
+// 2. Textos de Amor en Órbita
 loveTexts.forEach((text, index) => {
     const textDiv = document.createElement('div');
     textDiv.classList.add('love-text');
     textDiv.textContent = text;
 
-    // Posicionamiento en el plano XZ (Órbita circular 2D)
-    // Los textos pueden tener un radio diferente para un anillo separado
-    const angle = (index / numLoveTexts) * 2 * Math.PI + random(-0.8, 0.8); // Ángulo con variación
-    const radius = (RADIUS_ORBIT * 1.5) + random(-100, 100); // Órbita más externa
+    const angle = (index / numLoveTexts) * 2 * Math.PI + random(-0.8, 0.8); 
+    const radius = (RADIUS_ORBIT * 1.5) + random(-100, 100); 
 
     const x = radius * Math.cos(angle);
     const y = random(-50, 50); 
     const z = radius * Math.sin(angle); 
     
-    textDiv.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+    // Aplicamos la posición de la órbita. La rotación de 'billboard' se aplica en CSS.
+    textDiv.style.transform += ` translate3d(${x}px, ${y}px, ${z}px)`;
 
-    textDiv.style.left = `calc(50% - ${textDiv.offsetWidth / 2}px)`; // Centrar el texto
-    textDiv.style.top = `calc(50% - ${textDiv.offsetHeight / 2}px)`;
+    textDiv.style.left = `calc(50%)`;
+    textDiv.style.top = `calc(50%)`;
     
     container.appendChild(textDiv);
 });
 
 
-// === LÓGICA PARA PARTÍCULAS NEBULOSA ARCOÍRIS ===
+// 3. Partículas Blancas Centelleantes (Estrellas)
+for (let i = 0; i < numWhiteParticles; i++) {
+    const particle = document.createElement('span');
+    particle.classList.add('white-particle');
+    
+    // Posicionamiento 3D completamente aleatorio
+    const x = random(-2000, 2000);
+    const y = random(-2000, 2000);
+    const z = random(-2000, 2000); 
+    
+    particle.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+    
+    // Retraso de animación aleatorio y duración ligeramente variable
+    particle.style.animationDelay = `${random(0, 3)}s`;
+    particle.style.animationDuration = `${random(2.5, 3.5)}s`; 
+
+    container.appendChild(particle);
+}
+
+// 4. Partículas de Nebulosa de Color
 for (let i = 0; i < numNebulaParticles; i++) {
     const particle = document.createElement('span');
     particle.classList.add('nebula-particle');
@@ -107,7 +127,7 @@ for (let i = 0; i < numNebulaParticles; i++) {
     particle.style.backgroundColor = color;
     particle.style.boxShadow = `0 0 5px ${color}`;
 
-    // Posicionamiento 3D en un volumen alrededor del centro, con mayor dispersión
+    // Posicionamiento 3D en un volumen alrededor del centro
     const x = random(-1500, 1500);
     const y = random(-1500, 1500);
     const z = random(-1500, 1500); 
@@ -118,11 +138,11 @@ for (let i = 0; i < numNebulaParticles; i++) {
     container.appendChild(particle);
 }
 
-// === LÓGICA DE ARRASTRE (DRAG) ===
+
+// === LÓGICA DE ARRASTRE (DRAG) (Mantener) ===
 let isDragging = false;
 let startX = 0;
 let startY = 0;
-// Rotación inicial del CSS (70deg en X)
 let rotX = 70; 
 let rotY = 0; 
 
@@ -147,7 +167,7 @@ document.addEventListener('mousemove', (e) => {
     rotY += deltaX / 5; 
     rotX -= deltaY / 5; 
     
-    rotX = Math.max(30, Math.min(150, rotX)); // Limita la inclinación vertical
+    rotX = Math.max(30, Math.min(150, rotX)); 
     
     applyRotation();
 
